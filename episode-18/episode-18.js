@@ -95,7 +95,7 @@ class Game {
         const history = [];
 
         while (history.length < this.#maxAttempts) {
-            var input = prompt('Please enter a number between 1 and 10');
+            var input = prompt(`Please enter a number between ${this.#minRange} and ${this.#maxRange}`);
 
             if (input === null) {
                 break;
@@ -104,7 +104,7 @@ class Game {
             var guess = Number(input);
     
             if (isNaN(guess) || guess < this.#minRange || guess > this.#maxRange) {
-                console.log('Please enter a valid number from 1 and 10');
+                console.log(`Please enter a valid number from ${this.#minRange} and ${this.#maxRange}`);
                 continue;
             }
 
@@ -136,13 +136,18 @@ function createLiElement({content}) {
     return element;
 }
 
+function getBy(cssSelector) {
+    return document.querySelector(cssSelector);
+}
+
 document.getElementById('settings-form').addEventListener('submit', function(e) {
     e.preventDefault();
 
-    let titleElement = document.getElementById('input-title');
-    let minRangeElement = document.getElementById('input-min-range');
-    let maxRangeElement = document.getElementById('input-max-range');
-    let maxAttemptsElement = document.getElementById('input-max-attempts');
+    let titleElement = getBy('#input-title');
+    let minRangeElement = getBy('#input-min-range');
+    let maxRangeElement = getBy('#input-max-range');
+    let maxAttemptsElement = getBy('#input-max-attempts');
+    let gameLevelElement = getBy('#game-level');
 
     const submitterName = e.submitter.name;
     
@@ -152,10 +157,17 @@ document.getElementById('settings-form').addEventListener('submit', function(e) 
         let maxRange = maxRangeElement.value;
         let maxAttempts = maxAttemptsElement.value;
 
-        if (!title || !minRange || !maxRange || !maxAttempts) {
-            alert('Please enter all settings');
-            return;
-        }
+        // if (!title || !minRange || !maxRange || !maxAttempts) {
+        //     alert('Please enter all settings');
+        //     return;
+        // }
+
+        // let selectedOption = gameLevelElement.options[gameLevelElement.selectedIndex];
+        let selectedOption = gameLevelElement.selectedOptions[0];
+
+        minRange = selectedOption.getAttribute('data-min-range'); // minRange
+        maxRange = selectedOption.dataset.maxRange;
+        maxAttempts = selectedOption.dataset.attempts;
 
         let easyGame = new Game({minRange, maxRange, maxAttempts});
         easyGame.play();
